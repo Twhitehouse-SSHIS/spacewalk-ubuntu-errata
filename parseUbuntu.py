@@ -18,6 +18,7 @@ import re
 import traceback
 import sys
 import xml.etree.cElementTree as XML
+import io
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -67,7 +68,7 @@ class MessagePackageInfo:
         self.version = pkg_version
 
 class MessageParser(object):
-    RELEASE = "(?P<release>Ubuntu \d\d.\d\d LTS)"
+    RELEASE = "(?P<release>Ubuntu \d\d.\d\d (LTS|ESM))"
     REFERENCES = "References:"
     SUMMARY = "Summary:"
     UPDATEINS = "Update instructions:"
@@ -252,7 +253,8 @@ class MessageArchiveFile(MessageParser):
         self.inputFile = input_file
 
     def parse(self):
-        inputData = open(self.inputFile).read()
+        inputData = io.open(self.inputFile, 'r', encoding='utf-8').read()
+        inputData = inputData.replace(u'\xa0', u' ')
 
         self.parsedMessages = list()
         
